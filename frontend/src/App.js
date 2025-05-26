@@ -73,7 +73,7 @@ function App() {
   // Define all callback functions before useEffect
   const checkBackendHealth = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}/health`);
+      const response = await axios.get(`${API_URL}/api/health`);
       console.log('Backend health:', response.data);
     } catch (err) {
       console.error('Backend health check failed:', err);
