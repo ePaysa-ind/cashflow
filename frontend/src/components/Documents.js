@@ -155,7 +155,7 @@ const Documents = ({ onClose, onViewDocument }) => {
     const document = documents.find(doc => doc.id === emailDialog.documentId);
     
     try {
-      const response = await fetch('http://localhost:5000/api/send-report', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/send-report`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

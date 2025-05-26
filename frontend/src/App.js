@@ -45,9 +45,7 @@ function App() {
   const [profileCompletion, setProfileCompletion] = useState(0); // Profile completion percentage
   const [showDocumentsModal, setShowDocumentsModal] = useState(false); // Show documents modal
 
-  const API_URL = process.env.NODE_ENV === 'production' 
-    ? 'https://localhost:5443/api'  // Use your production domain
-    : 'https://localhost:5443/api'; // Development HTTPS (certificates now ready!)
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
   const maxFiles = 2;
   const maxSize = 20 * 1024 * 1024; // 20MB
 

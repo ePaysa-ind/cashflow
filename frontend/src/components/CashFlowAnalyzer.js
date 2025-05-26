@@ -15,7 +15,7 @@ function CashFlowAnalyzer() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [showCharts, setShowCharts] = useState(true);
 
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     checkBackendHealth();
@@ -23,7 +23,7 @@ function CashFlowAnalyzer() {
 
   const checkBackendHealth = async () => {
     try {
-      const response = await axios.get(`${API_URL}/health`);
+      const response = await axios.get(`${API_URL}/api/health`);
       console.log('Backend health:', response.data);
     } catch (err) {
       setError('Backend server is not running. Please start the server on port 5000.');
@@ -65,7 +65,7 @@ function CashFlowAnalyzer() {
     });
 
     try {
-      const response = await axios.post(`${API_URL}/analyze`, formData, {
+      const response = await axios.post(`${API_URL}/api/analyze`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -108,7 +108,7 @@ function CashFlowAnalyzer() {
     setIsChatLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/chat`, {
+      const response = await axios.post(`${API_URL}/api/chat`, {
         message: chatInput,
         documentContext: analysis?.text || ''
       });
