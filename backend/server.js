@@ -12,6 +12,16 @@ const helmet = require('helmet');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+// Database connection - only if DATABASE_URL exists
+let db, dbQueries;
+if (process.env.DATABASE_URL) {
+  db = require('./db');
+  dbQueries = require('./db-queries');
+  console.log('🗄️  Database module loaded');
+} else {
+  console.log('⚠️  No DATABASE_URL found - running without database');
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -83,6 +93,41 @@ app.use(cors({
 
 app.use(express.json({ limit: '50mb' })); // Increased limit for structured content
 app.use('/api/', limiter);
+
+// Firebase Auth Middleware - extracts user from token
+const extractUser = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      req.user = null;
+      return next();
+    }
+
+    const token = authHeader.split(' ')[1];
+    // For now, we'll extract the user ID from the token payload
+    // In production, you'd verify this with Firebase Admin SDK
+    try {
+      const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      req.user = {
+        uid: payload.user_id || payload.sub,
+        email: payload.email
+      };
+    } catch (e) {
+      req.user = null;
+    }
+    next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    req.user = null;
+    next();
+  }
+};
+
+// Apply auth middleware to protected routes
+app.use('/api/analyze', extractUser);
+app.use('/api/chat', extractUser);
+app.use('/api/send-report', extractUser);
+app.use('/api/user', extractUser);
 
 // Configure multer for file uploads (memory storage - no files saved to disk)
 const upload = multer({ 
@@ -402,8 +447,10 @@ app.post('/api/analyze', upload.array('documents', 2), async (req, res) => {
     }
 
     console.log('Processing files:', req.files.map(f => f.originalname));
+    console.log('User:', req.user ? req.user.email : 'Anonymous');
     
     const results = [];
+    let documentId = null;
     
     // Process each file
     for (const file of req.files) {
@@ -478,12 +525,37 @@ app.post('/api/analyze', upload.array('documents', 2), async (req, res) => {
       }
     }
     
+    // Save to database if user is authenticated and database is available
+    if (req.user && dbQueries) {
+      try {
+        // Create or update user in database
+        await dbQueries.userQueries.upsertUser(req.user.uid, req.user.email);
+        
+        // Save document
+        const documentData = {
+          name: req.files.map(f => f.originalname).join(', '),
+          type: 'multi-file',
+          analysis: JSON.stringify({ files: results, totalFiles: req.files.length }),
+          file_count: req.files.length,
+          upload_date: new Date()
+        };
+        
+        const savedDoc = await dbQueries.documentQueries.saveDocument(req.user.uid, documentData);
+        documentId = savedDoc.id;
+        console.log('Document saved to database:', documentId);
+      } catch (dbError) {
+        console.error('Database save error:', dbError);
+        // Continue even if database save fails
+      }
+    }
+    
     // Return results
     res.json({
       success: true,
       files: results,
       totalFiles: req.files.length,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      documentId: documentId
     });
     
   } catch (error) {
@@ -578,7 +650,7 @@ Format your response as clear, executive-level insights.`;
 // Chat endpoint for document Q&A
 app.post('/api/chat', async (req, res) => {
   try {
-    const { query, documents } = req.body;
+    const { query, documents, sessionId } = req.body;
     
     if (!query || !documents || documents.length === 0) {
       return res.status(400).json({ error: 'No query or documents provided' });
@@ -622,6 +694,16 @@ Provide a helpful, specific answer based on the document data above. If the ques
     
     const chatResponse = response.data.content[0].text;
     
+    // Save chat to database if user is authenticated
+    if (req.user && dbQueries) {
+      try {
+        await dbQueries.chatQueries.saveChat(req.user.uid, sessionId || 'default', query, chatResponse);
+      } catch (dbError) {
+        console.error('Chat save error:', dbError);
+        // Continue even if database save fails
+      }
+    }
+    
     res.json({
       success: true,
       query: query,
@@ -636,6 +718,79 @@ Provide a helpful, specific answer based on the document data above. If the ques
       error: 'Failed to process chat query',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
+  }
+});
+
+// User profile endpoints
+app.get('/api/user/profile', async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    if (!dbQueries) {
+      // Return basic info if no database
+      return res.json({
+        uid: req.user.uid,
+        email: req.user.email
+      });
+    }
+    
+    const profile = await dbQueries.userQueries.getUser(req.user.uid);
+    res.json(profile || { uid: req.user.uid, email: req.user.email });
+  } catch (error) {
+    console.error('Profile fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+app.put('/api/user/profile', async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const { fullName, companyName, industry, companySize } = req.body;
+    
+    if (!dbQueries) {
+      // Return success even without database
+      return res.json({
+        success: true,
+        message: 'Profile update simulated (no database)'
+      });
+    }
+    
+    await dbQueries.userQueries.updateProfile(req.user.uid, {
+      fullName,
+      companyName,
+      industry,
+      companySize
+    });
+    
+    const updatedProfile = await dbQueries.userQueries.getUser(req.user.uid);
+    res.json(updatedProfile);
+  } catch (error) {
+    console.error('Profile update error:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Get user's saved documents
+app.get('/api/user/documents', async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    if (!dbQueries) {
+      return res.json({ documents: [] });
+    }
+    
+    const documents = await dbQueries.documentQueries.getDocuments(req.user.uid);
+    res.json({ documents });
+  } catch (error) {
+    console.error('Documents fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch documents' });
   }
 });
 

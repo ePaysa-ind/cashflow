@@ -10,6 +10,14 @@ import './App.css';
 
 function App() {
   const navigate = useNavigate();
+  
+  // Debug environment variables
+  console.log('ENV Debug:', {
+    NODE_ENV: process.env.NODE_ENV,
+    API_URL: process.env.REACT_APP_API_URL,
+    FIREBASE_PROJECT: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+    ALL_ENV_KEYS: Object.keys(process.env).filter(key => key.startsWith('REACT_APP'))
+  });
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
