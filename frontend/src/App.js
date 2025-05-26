@@ -571,7 +571,7 @@ function App() {
       setUploadProgress(25);
       setProcessingStatus('Processing documents with AI...');
 
-      const response = await axios.post(`${API_URL}/analyze`, formData, {
+      const response = await axios.post(`${API_URL}/api/analyze`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }
@@ -699,7 +699,7 @@ function App() {
         documents: analysis.files
       };
       
-      const response = await axios.post(`${API_URL}/chat`, chatData);
+      const response = await axios.post(`${API_URL}/api/chat`, chatData);
 
       // Add AI response to history
       setChatHistory(prev => [...prev, {
