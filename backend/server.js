@@ -16,7 +16,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Trust proxy - required for Railway and other cloud platforms
-app.set('trust proxy', true);
+// Use specific number instead of true to avoid rate limiter warning
+app.set('trust proxy', 1); // Trust first proxy only
 
 // Security middleware
 app.use(helmet({
