@@ -65,6 +65,11 @@ app.use(cors({
       'http://localhost:3001',
       'https://localhost:3000',
       'https://localhost:3001',
+      // Production domains
+      'https://qash.solutions',
+      'https://www.qash.solutions',
+      'http://qash.solutions',
+      'http://www.qash.solutions',
       // Vercel deployments
       'https://cashflow-6l1dmbv8g-cvrs-projects-18b0a489.vercel.app',
       'https://cashflow-f9okksuog-cvrs-projects-18b0a489.vercel.app'
