@@ -50,8 +50,16 @@ app.use(cors({
       'http://localhost:3000',
       'http://localhost:3001',
       'https://localhost:3000',
-      'https://localhost:3001'
+      'https://localhost:3001',
+      // Vercel deployments
+      'https://cashflow-6l1dmbv8g-cvrs-projects-18b0a489.vercel.app',
+      'https://cashflow-f9okksuog-cvrs-projects-18b0a489.vercel.app'
     ];
+    
+    // Allow all Vercel preview deployments
+    if (origin && origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
     
     // In production, add your actual domain
     if (process.env.NODE_ENV === 'production' && process.env.FRONTEND_URL) {
