@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Analyzer Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border: 2px solid black;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .layout-container {
+            display: flex;
+            height: 80vh;
+        }
+
+        /* LEFT COLUMN - 40% */
+        .left-column {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #ddd;
+        }
+
+        /* TOP SECTION - 40% of left column */
+        .upload-section {
+            height: 40%;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upload-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .upload-limit {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .format-icons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .format-icon {
+            width: 24px;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .pdf { background: #ff6b6b; color: white; }
+        .word { background: #4dabf7; color: white; }
+        .excel { background: #51cf66; color: white; }
+        .jpeg { background: #ffd43b; color: #333; }
+        .webp { background: #9775fa; color: white; }
+
+        .document-list {
+            margin-bottom: 15px;
+        }
+
+        .document-list h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .document-item {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+            padding: 4px 0;
+        }
+
+        .upload-zone {
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: #007bff;
+            background: #f0f8ff;
+        }
+
+        .upload-zone.dragover {
+            border-color: #007bff;
+            background: #e3f2fd;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .upload-summary {
+            font-size: 14px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .analyze-button {
+            width: 50%;
+            margin: 0 auto;
+            padding: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .analyze-button:hover {
+            background: #c82333;
+        }
+
+        .analyze-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* BOTTOM SECTION - 60% of left column */
+        .chat-section {
+            height: 60%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .nudge-cards {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .nudge-card {
+            flex: 1;
+            background: #2c3e50;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nudge-card:hover {
+            background: #34495e;
+        }
+
+        .chat-textarea {
+            flex: 1;
+            border: 2px solid #dc3545;
+            border-radius: 6px;
+            padding: 15px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .chat-textarea:focus {
+            border-color: #c82333;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .chat-button {
+            width: 50%;
+            margin: 0 auto;
+            padding: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .chat-button:hover {
+            background: #c82333;
+        }
+
+        /* RIGHT COLUMN - 60% */
+        .right-column {
+            width: 60%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .summary-section {
+            margin-bottom: 20px;
+        }
+
+        .summary-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .summary-text {
+            font-size: 14px;
+            color: #666;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .analysis-section {
+            flex: 1;
+        }
+
+        .analysis-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .analysis-summary {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .analysis-summary h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .summary-content p {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .summary-content strong {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .table-section h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .analysis-table th {
+            background: #28a745;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .analysis-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+            color: #333;
+            vertical-align: top;
+        }
+
+        .analysis-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .analysis-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .footer h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .layout-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .left-column, .right-column {
+                width: 100%;
+            }
+            
+            .upload-section {
+                height: auto;
+            }
+            
+            .chat-section {
+                height: 300px;
+            }
+            
+            .format-icons {
+                flex-wrap: wrap;
+            }
+            
+            .nudge-cards {
+                flex-direction: column;
+            }
+        }
+
+        /* DRAG AND DROP STYLES */
+        .file-input {
+            display: none;
+        }
+
+        .file-preview {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 4px;
+            padding: 8px;
+            margin: 4px 0;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-preview .remove-file {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="layout-container">
+            <!-- LEFT COLUMN -->
+            <div class="left-column">
+                <!-- TOP SECTION - Upload Area -->
+                <div class="upload-section">
+                    <h2 class="upload-title">Drop or Upload your documents here</h2>
+                    <p class="upload-subtitle">Following formats supported.</p>
+                    <p class="upload-limit">3 docs or 10 MB max allowed</p>
+                    
+                    <div class="format-icons">
+                        <div class="format-icon pdf">PDF</div>
+                        <div class="format-icon word">DOC</div>
+                        <div class="format-icon excel">XLS</div>
+                        <div class="format-icon jpeg">JPG</div>
+                        <div class="format-icon webp">WEBP</div>
+                    </div>
+                    
+                    <div class="document-list" id="document-list-container" style="display: none;">
+                        <h4>Document Name and size MB</h4>
+                        <div id="file-list">
+                        </div>
+                    </div>
+                    
+                    <div class="upload-zone" id="upload-zone">
+                        <input type="file" id="file-input" class="file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp">
+                        <p class="upload-text">Drop files here or click to upload</p>
+                    </div>
+                    
+                    <button class="analyze-button" id="analyze-btn" disabled>Analyze Documents</button>
+                </div>
+                
+                <!-- BOTTOM SECTION - Chat Area -->
+                <div class="chat-section">
+                    <h2 class="chat-title">Ask me anything related to these documents</h2>
+                    
+                    <div class="nudge-cards">
+                        <div class="nudge-card" onclick="insertSuggestion('What are the key points?')">
+                            What are the key points?
+                        </div>
+                        <div class="nudge-card" onclick="insertSuggestion('Summarize these documents')">
+                            Summarize these documents
+                        </div>
+                    </div>
+                    
+                    <textarea class="chat-textarea" id="chat-input" placeholder="Type your question here..."></textarea>
+                    
+                    <button class="chat-button" id="chat-btn">Send Question</button>
+                </div>
+            </div>
+            
+            <!-- RIGHT COLUMN -->
+            <div class="right-column">
+                <div class="analysis-section">
+                    <h2 class="analysis-title">Detailed Analysis</h2>
+                    
+                    <!-- Summary Section -->
+                    <div class="analysis-summary" id="analysis-summary" style="display: none;">
+                        <h3>Summary</h3>
+                        <div class="summary-content">
+                            <p><strong>Total Documents:</strong> <span id="total-docs">0</span></p>
+                            <p><strong>Document Types:</strong> <span id="doc-types">None</span></p>
+                            <p><strong>Key Insights:</strong> <span id="key-insights">Upload documents to see insights</span></p>
+                            <p><strong>Confidence Level:</strong> <span id="confidence-level">N/A</span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Detailed Table -->
+                    <div class="table-section">
+                        <h3>Document Details</h3>
+                        <table class="analysis-table">
+                            <thead>
+                                <tr>
+                                    <th>Document Name</th>
+                                    <th>Key Focus Areas</th>
+                                    <th>Highlights</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analysis-tbody">
+                                <tr>
+                                    <td colspan="3" class="empty-state">
+                                        Upload documents to see detailed analysis
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FOOTER -->
+        <div class="footer">
+            <h4>Reference</h4>
+            <p>Document Analyzer powered by Claude AI | Supports PDF, Word, Excel, JPEG, WEBP formats | Maximum 3 files or 10MB total</p>
+        </div>
+    </div>
+
+    <script>
+        let uploadedFiles = [];
+        const maxFiles = 3;
+        const maxSize = 10 * 1024 * 1024; // 10MB
+
+        // DOM elements
+        const uploadZone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const summaryText = document.getElementById('summary-text');
+        const analysisTable = document.getElementById('analysis-tbody');
+        const chatInput = document.getElementById('chat-input');
+        const chatBtn = document.getElementById('chat-btn');
+
+        // Drag and drop functionality
+        uploadZone.addEventListener('click', () => fileInput.click());
+        uploadZone.addEventListener('dragover', handleDragOver);
+        uploadZone.addEventListener('dragleave', handleDragLeave);
+        uploadZone.addEventListener('drop', handleDrop);
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            addFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            addFiles(files);
+        }
+
+        function addFiles(files) {
+            files.forEach(file => {
+                if (uploadedFiles.length >= maxFiles) {
+                    alert(`Maximum ${maxFiles} files allowed`);
+                    return;
+                }
+
+                // Check for duplicates by name AND size (more robust)
+                if (uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    alert(`File "${file.name}" is already uploaded`);
+                    return;
+                }
+
+                // Check file size
+                const totalSize = uploadedFiles.reduce((sum, f) => sum + f.size, 0) + file.size;
+                if (totalSize > maxSize) {
+                    alert('Total file size exceeds 10MB limit');
+                    return;
+                }
+
+                uploadedFiles.push(file);
+            });
+
+            updateUI();
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            updateUI();
+        }
+
+        function updateUI() {
+            const documentListContainer = document.getElementById('document-list-container');
+            
+            // Show/hide document list section
+            if (uploadedFiles.length > 0) {
+                documentListContainer.style.display = 'block';
+                
+                // Update file list
+                fileList.innerHTML = '';
+                uploadedFiles.forEach((file, index) => {
+                    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <div class="file-preview">
+                            <span>${index + 1}. ${file.name} (${sizeMB} MB)</span>
+                            <button class="remove-file" onclick="removeFile(${index})">×</button>
+                        </div>
+                    `;
+                    fileList.appendChild(div);
+                });
+            } else {
+                documentListContainer.style.display = 'none';
+            }
+
+            // Update analyze button
+            analyzeBtn.disabled = uploadedFiles.length === 0;
+
+            // Update analysis table
+            if (uploadedFiles.length === 0) {
+                analysisTable.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="empty-state">
+                            Upload documents to see detailed analysis
+                        </td>
+                    </tr>
+                `;
+            } else {
+                analysisTable.innerHTML = uploadedFiles.map(file => `
+                    <tr>
+                        <td>${file.name}</td>
+                        <td>Document analysis pending...</td>
+                        <td>Click "Analyze Documents" to process</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function insertSuggestion(text) {
+            chatInput.value = text;
+            chatInput.focus();
+        }
+
+        // Analyze button functionality
+        analyzeBtn.addEventListener('click', function() {
+            if (uploadedFiles.length === 0) return;
+            
+            this.textContent = 'Analyzing...';
+            this.disabled = true;
+            
+            // Show summary section
+            const summarySection = document.getElementById('analysis-summary');
+            summarySection.style.display = 'block';
+            
+            // Simulate analysis process
+            setTimeout(() => {
+                // Update summary
+                document.getElementById('total-docs').textContent = uploadedFiles.length;
+                
+                const fileTypes = [...new Set(uploadedFiles.map(f => {
+                    const ext = f.name.split('.').pop().toUpperCase();
+                    return ext;
+                }))].join(', ');
+                document.getElementById('doc-types').textContent = fileTypes;
+                
+                const insights = uploadedFiles.length > 1 ? 
+                    'Multiple documents detected. Cross-referencing data for comprehensive analysis.' :
+                    'Single document analysis completed. All key data points extracted.';
+                document.getElementById('key-insights').textContent = insights;
+                
+                const confidence = (85 + Math.random() * 10).toFixed(0);
+                document.getElementById('confidence-level').textContent = `${confidence}% High`;
+                
+                // Update table
+                analysisTable.innerHTML = uploadedFiles.map((file, index) => {
+                    const fileType = file.name.split('.').pop().toUpperCase();
+                    const focusAreas = {
+                        'PDF': 'Invoice data, payment terms, client information',
+                        'DOC': 'Text analysis, contract terms, key clauses',
+                        'DOCX': 'Document structure, financial data, agreements',
+                        'XLS': 'Numerical data, financial calculations, budgets',
+                        'XLSX': 'Spreadsheet analysis, data trends, calculations',
+                        'JPG': 'Image OCR, text extraction, visual elements',
+                        'JPEG': 'Photo analysis, text recognition, document scan',
+                        'PNG': 'Image processing, text extraction, visual data',
+                        'WEBP': 'Modern image format, enhanced OCR processing'
+                    };
+                    
+                    const highlights = {
+                        'PDF': `Invoice analysis complete - ${(85 + Math.random() * 10).toFixed(0)}% confidence`,
+                        'DOC': `Contract terms identified - ${(80 + Math.random() * 15).toFixed(0)}% accuracy`,
+                        'DOCX': `Document structure analyzed - ${(90 + Math.random() * 8).toFixed(0)}% success`,
+                        'XLS': `Financial data extracted - ${(95 + Math.random() * 5).toFixed(0)}% precision`,
+                        'XLSX': `Spreadsheet processed - ${(92 + Math.random() * 7).toFixed(0)}% completion`,
+                        'JPG': `OCR processing complete - ${(75 + Math.random() * 20).toFixed(0)}% text recognition`,
+                        'JPEG': `Image analysis done - ${(78 + Math.random() * 17).toFixed(0)}% data extraction`,
+                        'PNG': `Visual processing complete - ${(82 + Math.random() * 15).toFixed(0)}% accuracy`,
+                        'WEBP': `Enhanced image analysis - ${(88 + Math.random() * 10).toFixed(0)}% confidence`
+                    };
+                    
+                    return `
+                        <tr>
+                            <td>${file.name}</td>
+                            <td>${focusAreas[fileType] || 'Document analysis, content extraction'}</td>
+                            <td>${highlights[fileType] || `Analysis complete - ${(80 + Math.random() * 15).toFixed(0)}% confidence`}</td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                this.textContent = 'Re-analyze Documents';
+                this.disabled = false;
+            }, 2000);
+        });
+
+        // Chat functionality
+        chatBtn.addEventListener('click', function() {
+            const question = chatInput.value.trim();
+            if (!question) return;
+            
+            if (uploadedFiles.length === 0) {
+                alert('Please upload documents first');
+                return;
+            }
+            
+            this.textContent = 'Processing...';
+            this.disabled = true;
+            
+            // Simulate chat response
+            setTimeout(() => {
+                alert(`Response to: "${question}"\n\nBased on your uploaded documents, here's what I found... (This would be the AI response)`);
+                chatInput.value = '';
+                this.textContent = 'Send Question';
+                this.disabled = false;
+            }, 1500);
+        });
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
