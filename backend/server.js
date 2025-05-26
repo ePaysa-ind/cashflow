@@ -313,6 +313,21 @@ Return the analysis in this JSON format:
   }
 }
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Qash API is running',
+    version: '2.0.0',
+    endpoints: {
+      health: '/api/health',
+      analyze: 'POST /api/analyze',
+      chat: 'POST /api/chat',
+      sendReport: 'POST /api/send-report',
+      supportedFormats: '/api/supported-formats'
+    }
+  });
+});
+
 // Health check endpoint with its own rate limiter
 app.get('/api/health', healthLimiter, (req, res) => {
   res.json({ 
