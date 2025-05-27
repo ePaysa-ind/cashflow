@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 import { useNavigate } from 'react-router-dom';
 import UploadLimitModal from './components/UploadLimitModal';
@@ -10,6 +10,15 @@ import './App.css';
 
 function App() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  
+  // Get current user
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return unsubscribe;
+  }, []);
   
   // Debug environment variables
   console.log('ENV Debug:', {
@@ -105,13 +114,15 @@ function App() {
       }))
     };
     
+    if (!user) return; // Don't save if no user
+    
     const sessionKey = `qash_session_${user.uid}`;
     localStorage.setItem(sessionKey, JSON.stringify(sessionData));
     
     // Show auto-save indicator
     setShowAutoSaveIndicator(true);
     setTimeout(() => setShowAutoSaveIndicator(false), 2000);
-  }, [analysis, uploadedFiles]);
+  }, [analysis, uploadedFiles, user]);
 
   const handleLogout = useCallback(async () => {
     try {
