@@ -580,14 +580,17 @@ function App() {
       setProcessingStatus('Processing documents with AI...');
 
       // Get the current user's ID token
-      const token = await user.getIdToken();
+      const token = auth.currentUser ? await auth.currentUser.getIdToken() : null;
       
-      const response = await axios.post(`${API_URL}/api/analyze`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const headers = {
+        'Content-Type': 'multipart/form-data'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await axios.post(`${API_URL}/api/analyze`, formData, { headers });
       
       setUploadProgress(75);
 
@@ -712,13 +715,14 @@ function App() {
       };
       
       // Get the current user's ID token
-      const token = await user.getIdToken();
+      const token = auth.currentUser ? await auth.currentUser.getIdToken() : null;
       
-      const response = await axios.post(`${API_URL}/api/chat`, chatData, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const headers = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await axios.post(`${API_URL}/api/chat`, chatData, { headers });
 
       // Add AI response to history
       setChatHistory(prev => [...prev, {
