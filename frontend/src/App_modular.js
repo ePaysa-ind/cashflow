@@ -2,16 +2,18 @@
  * Main Application Component (Refactored)
  * 
  * Purpose: Main dashboard container using modular architecture
- * Features: File upload, document analysis, chat interface, user management
+ * Features: Complete 4-section layout, hamburger menu, trial status, chat interface
  * 
- * This is a simplified version that uses extracted modules for better maintainability
+ * This version includes all features from the original 3400-line App.js
  * 
  * @component
  * @version 3.1.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
+import { auth } from './firebase';
 
 // Context and Hooks
 import { useAuth } from './context/AuthContext';
@@ -21,10 +23,12 @@ import useUpload from './hooks/useUpload';
 import api from './services/api';
 
 // Components
-import Header from './components/Header/Header';
 import Profile from './components/Profile';
 import Documents from './components/Documents';
 import UploadLimitModal from './components/UploadLimitModal';
+
+// Utils
+import { icons } from './utils/icons';
 
 // Constants
 import { 
@@ -46,7 +50,7 @@ function App() {
   const DEBUG = process.env.NODE_ENV === 'development';
   const debugLog = (context, message, data = null) => {
     if (DEBUG) {
-      console.log(`[App_new ${context}] ${message}`, data || '');
+      console.log(`[App ${context}] ${message}`, data || '');
     }
   };
 
