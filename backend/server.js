@@ -10,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 const crypto = require('crypto');
 const helmet = require('helmet');
 const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 require('dotenv').config();
 
 // Database connection - only if DATABASE_URL exists
@@ -808,17 +809,9 @@ app.post('/api/send-report', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Create email transporter
-    // For production, use proper SMTP settings (Gmail, SendGrid, etc.)
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: process.env.SMTP_PORT || 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
-    });
+    // Check if using Resend or SMTP
+    const useResend = process.env.RESEND_API_KEY;
+    
 
     // Generate PDF content (text version for now)
     let reportContent = `QASH FINANCIAL ANALYSIS REPORT\n`;
@@ -868,26 +861,68 @@ app.post('/api/send-report', async (req, res) => {
     };
 
     // Send email
-    const mailOptions = {
-      from: process.env.SMTP_FROM || 'Qash Financial Analysis <noreply@qash.com>',
-      to: to,
-      subject: subject,
-      text: message,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #3B82F6;">Qash Financial Analysis Report</h2>
-          <pre style="white-space: pre-wrap;">${message}</pre>
-          <hr style="border: 1px solid #E5E7EB; margin: 20px 0;">
-          <p style="color: #6B7280; font-size: 14px;">
-            Please find the detailed financial analysis report attached.
-          </p>
-        </div>
-      `,
-      attachments: [attachment]
-    };
+    if (useResend) {
+      // Use Resend API
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      
+      await resend.emails.send({
+        from: 'Qash <hello@qash.solutions>',
+        to: to,
+        subject: subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #3B82F6;">Qash Financial Analysis Report</h2>
+            <pre style="white-space: pre-wrap;">${message}</pre>
+            <hr style="border: 1px solid #E5E7EB; margin: 20px 0;">
+            <p style="color: #6B7280; font-size: 14px;">
+              Please find the detailed financial analysis report below.
+            </p>
+            <hr style="border: 1px solid #E5E7EB; margin: 20px 0;">
+            <pre style="font-family: monospace; background: #f5f5f5; padding: 20px; overflow-x: auto;">${reportContent}</pre>
+          </div>
+        `,
+        attachments: [
+          {
+            filename: attachment.filename,
+            content: Buffer.from(reportContent).toString('base64')
+          }
+        ]
+      });
+      
+      console.log('Email sent successfully via Resend to:', to);
+    } else {
+      // Use SMTP
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: process.env.SMTP_PORT || 587,
+        secure: false,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
+        }
+      });
+      
+      const mailOptions = {
+        from: process.env.SMTP_FROM || 'Qash <noreply@qash.solutions>',
+        to: to,
+        subject: subject,
+        text: message,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #3B82F6;">Qash Financial Analysis Report</h2>
+            <pre style="white-space: pre-wrap;">${message}</pre>
+            <hr style="border: 1px solid #E5E7EB; margin: 20px 0;">
+            <p style="color: #6B7280; font-size: 14px;">
+              Please find the detailed financial analysis report attached.
+            </p>
+          </div>
+        `,
+        attachments: [attachment]
+      };
 
-    await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully to:', to);
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully via SMTP to:', to);
+    }
     
     res.json({ success: true, message: 'Report sent successfully' });
     
