@@ -155,6 +155,13 @@ npm start
 - Component-based React structure
 - Mobile-first responsive design
 
+### Coding Best Practices
+- Detailed error handling, inline code commenting
+  - Implement comprehensive error tracing
+  - Add descriptive comments explaining complex logic
+  - Use try/catch blocks with specific error handling
+  - Log errors with context for easier debugging
+
 ## Important Notes
 
 1. **Model**: Always use Claude 3.5 Sonnet (`claude-3-5-sonnet-20241022`)
