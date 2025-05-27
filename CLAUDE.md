@@ -56,7 +56,33 @@ frontend/src/
 6. **Email Forwarding** for reports
 7. **Password Strength Indicator**
 8. **Rate Limiting** for API protection
-9. **Responsive Two-Column Layout**
+9. **Responsive Layout with Four Main Sections**
+
+### UI Layout Structure
+The application features a sophisticated layout with:
+
+**Header Section (Fixed)**
+- Logo and branding
+- Hamburger menu with user profile, trial status, and upload limits
+- Auto-save indicator
+
+**Main Content (Two-Column Layout)**
+- **Left Column (40%)**:
+  - Document Upload Section
+  - Chat Section with collapsible messages
+  
+- **Right Column (60%)**:
+  - Analysis Results with three subsections:
+    - Executive Summary (graphical overview)
+    - Detailed Financial Analysis
+    - Action Items and Recommendations
+
+**Visual Design**
+- Clean grey borders for section separation
+- SVG-only icons for consistency
+- Active menu state highlighting
+- Vertical scrolling with fixed header
+- Responsive design for different screen sizes
 
 ## Development Setup
 
