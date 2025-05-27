@@ -157,10 +157,18 @@ export const AuthProvider = ({ children }) => {
     // Helper methods
     isAuthenticated: !!user,
     
-    // Get user display name with fallback
+    // Get user display name with fallback (first name only)
     getUserDisplayName: () => {
       if (!user) return 'Guest';
-      return user.displayName || user.email?.split('@')[0] || 'User';
+      
+      // If user has a display name, get first name only
+      if (user.displayName) {
+        const firstName = user.displayName.split(' ')[0];
+        return firstName || user.displayName;
+      }
+      
+      // Fallback to email username
+      return user.email?.split('@')[0] || 'User';
     },
     
     // Get user initials for avatar

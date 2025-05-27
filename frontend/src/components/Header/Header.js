@@ -283,21 +283,14 @@ const Header = ({
               >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path
-                    d="M7 3H13C13.5304 3 14.0391 3.21071 14.4142 3.58579C14.7893 3.96086 15 4.46957 15 5V17C15 16.4696 14.7893 15.9609 14.4142 15.5858C14.0391 15.2107 13.5304 15 13 15H7C6.46957 15 5.96086 15.2107 5.58579 15.5858C5.21071 15.9609 5 16.4696 5 17V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M8 7H12M8 10H12M8 13H10"
+                    d="M9 2H4C3.46957 2 2.96086 2.21071 2.58579 2.58579C2.21071 2.96086 2 3.46957 2 4V16C2 16.5304 2.21071 17.0391 2.58579 17.4142C2.96086 17.7893 3.46957 18 4 18H16C16.5304 18 17.0391 17.7893 17.4142 17.4142C17.7893 17.0391 18 16.5304 18 16V11M16 2L18 4L10 12L7 13L8 10L16 2Z"
                     stroke="currentColor"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>
-                Documents
+                Saved Documents
               </button>
               
               <button

@@ -119,6 +119,77 @@ const DetailedAnalysis = ({ analysis }) => {
             {/* Expanded Content */}
             {isExpanded && (
               <div style={{ padding: '16px' }}>
+                {/* Positives Card */}
+                {fileAnalysis.keyInsights && fileAnalysis.keyInsights.length > 0 && (
+                  <div style={{
+                    backgroundColor: '#f0fdf4',
+                    border: '1px solid #10b981',
+                    borderRadius: '6px',
+                    padding: '16px',
+                    marginBottom: '16px'
+                  }}>
+                    <h5 style={{ 
+                      margin: '0 0 12px 0', 
+                      fontSize: '14px', 
+                      color: '#065f46',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path
+                          d="M8 1C11.866 1 15 4.13401 15 8C15 11.866 11.866 15 8 15C4.13401 15 1 11.866 1 8C1 4.13401 4.13401 1 8 1ZM10.5 5.5L7 9L5.5 7.5"
+                          stroke="#10b981"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Positive Findings
+                    </h5>
+                    <ul style={{ margin: 0, paddingLeft: '20px', color: '#047857', fontSize: '13px' }}>
+                      {fileAnalysis.keyInsights.map((insight, idx) => (
+                        <li key={idx} style={{ marginBottom: '4px' }}>{insight}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {/* Actions/Alerts Card */}
+                {fileAnalysis.recommendations && fileAnalysis.recommendations.length > 0 && (
+                  <div style={{
+                    backgroundColor: '#fffbeb',
+                    border: '1px solid #f59e0b',
+                    borderRadius: '6px',
+                    padding: '16px',
+                    marginBottom: '16px'
+                  }}>
+                    <h5 style={{ 
+                      margin: '0 0 12px 0', 
+                      fontSize: '14px', 
+                      color: '#92400e',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path
+                          d="M8 1L1 14H15L8 1ZM8 6V9M8 11H8.01"
+                          stroke="#f59e0b"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      Actions & Recommendations
+                    </h5>
+                    <ul style={{ margin: 0, paddingLeft: '20px', color: '#b45309', fontSize: '13px' }}>
+                      {fileAnalysis.recommendations.map((rec, idx) => (
+                        <li key={idx} style={{ marginBottom: '4px' }}>{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {/* Document Details */}
                 <div style={{
                   display: 'grid',

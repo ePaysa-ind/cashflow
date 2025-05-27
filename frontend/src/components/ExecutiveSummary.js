@@ -67,23 +67,59 @@ const ExecutiveSummary = ({ analysis }) => {
 
   const metrics = getCFOMetrics();
 
+  // Simple bar chart component
+  const BarChart = ({ value, maxValue, label, color }) => {
+    const percentage = Math.min((value / maxValue) * 100, 100);
+    return (
+      <div style={{ marginBottom: '12px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+          <span style={{ fontSize: '12px', color: '#6b7280' }}>{label}</span>
+          <span style={{ fontSize: '12px', fontWeight: '500', color }}>{value}%</span>
+        </div>
+        <div style={{ 
+          width: '100%', 
+          height: '8px', 
+          backgroundColor: '#e5e7eb', 
+          borderRadius: '4px',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            width: `${percentage}%`,
+            height: '100%',
+            backgroundColor: color,
+            transition: 'width 0.5s ease'
+          }} />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div style={{
-      backgroundColor: '#f9fafb',
+      backgroundColor: '#ffffff',
       border: '1px solid #d0d0d0',
       borderRadius: '8px',
-      padding: '20px',
+      padding: '24px',
       marginBottom: '20px'
     }}>
       <h3 style={{ 
-        margin: '0 0 16px 0', 
-        fontSize: '16px', 
+        margin: '0 0 20px 0', 
+        fontSize: '18px', 
+        fontWeight: '600',
         color: '#1f2937',
         display: 'flex',
         alignItems: 'center',
         gap: '8px'
       }}>
-        {icons.chart('#3b82f6')}
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path
+            d="M3 3V17H17M7 14V10M11 14V6M15 14V8"
+            stroke="#3b82f6"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
         Executive Summary
       </h3>
 
@@ -161,6 +197,44 @@ const ExecutiveSummary = ({ analysis }) => {
               {metrics.highUrgencyCount}
             </div>
           </div>
+        )}
+      </div>
+
+      {/* Visual Charts Section */}
+      <div style={{
+        marginTop: '20px',
+        padding: '16px',
+        backgroundColor: '#f9fafb',
+        borderRadius: '6px',
+        border: '1px solid #e5e7eb'
+      }}>
+        <h4 style={{ margin: '0 0 16px 0', fontSize: '14px', fontWeight: '600', color: '#374151' }}>
+          Performance Metrics
+        </h4>
+        
+        <BarChart 
+          value={metrics.avgConfidence} 
+          maxValue={100} 
+          label="Analysis Confidence" 
+          color="#3b82f6" 
+        />
+        
+        {metrics.executiveSummary.revenueGrowth && (
+          <BarChart 
+            value={parseInt(metrics.executiveSummary.revenueGrowth)} 
+            maxValue={100} 
+            label="Revenue Growth" 
+            color="#10b981" 
+          />
+        )}
+        
+        {metrics.executiveSummary.grossMargin && (
+          <BarChart 
+            value={parseInt(metrics.executiveSummary.grossMargin)} 
+            maxValue={100} 
+            label="Gross Margin" 
+            color="#f59e0b" 
+          />
         )}
       </div>
 

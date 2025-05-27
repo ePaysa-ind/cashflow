@@ -27,6 +27,19 @@ const ChatSection = ({
       [index]: !prev[index]
     }));
   };
+  
+  // Auto-collapse all messages except the latest pair when new messages are added
+  React.useEffect(() => {
+    if (chatHistory.length > 2) {
+      const newExpanded = {};
+      // Keep only the last user message and AI response expanded
+      if (chatHistory.length >= 2) {
+        newExpanded[chatHistory.length - 1] = true; // Last AI response
+        newExpanded[chatHistory.length - 2] = true; // Last user question
+      }
+      setExpandedMessages(newExpanded);
+    }
+  }, [chatHistory.length, setExpandedMessages]);
 
   return (
     <div style={{ marginTop: '20px', borderTop: '1px solid #d0d0d0', paddingTop: '20px' }}>
@@ -85,7 +98,7 @@ const ChatSection = ({
                     fontSize: '13px',
                     lineHeight: '1.5'
                   }}>
-                    {msg.message.length > 200 && !expandedMessages[index] ? (
+                    {msg.message.length > 200 && expandedMessages[index] !== true ? (
                       <>
                         {msg.message.substring(0, 200)}...
                         <button
@@ -96,7 +109,8 @@ const ChatSection = ({
                             color: '#3b82f6',
                             cursor: 'pointer',
                             fontSize: '12px',
-                            marginLeft: '4px'
+                            marginLeft: '4px',
+                            textDecoration: 'underline'
                           }}
                         >
                           Show more
