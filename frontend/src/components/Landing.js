@@ -174,9 +174,23 @@ function Landing() {
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
-          gap: '8px'
+          gap: '12px'
         }}>
-          {icons.money()}
+          <div style={{
+            width: '40px',
+            height: '40px',
+            backgroundColor: '#3b82f6',
+            borderRadius: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '20px',
+            fontWeight: 'bold',
+            boxShadow: '0 2px 4px rgba(59, 130, 246, 0.2)'
+          }}>
+            Q
+          </div>
           <h1 style={{ 
             fontSize: '24px', 
             fontWeight: '700', 

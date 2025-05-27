@@ -5,7 +5,8 @@
  * Features: File upload, analysis display, chat interface, hamburger menu
  * 
  * @component
- * @version 3.1.0
+ * @version 3.1.1 - Fixed UI/UX with proper Qash branding
+ * @updated 2024-01-27
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
