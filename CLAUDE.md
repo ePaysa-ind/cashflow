@@ -5,19 +5,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 **Qash** - 100% SaaS Financial Analysis Platform powered by Claude AI
+Live at: https://qash.solutions
 
 A comprehensive cash flow analysis tool that helps businesses understand their financial health through AI-powered document analysis with interactive chat capabilities.
 
 ## Architecture
 
 ### 100% Cloud-Based SaaS Model
-- **Frontend**: React 18 with Firebase Authentication
-- **Backend**: Express.js API with Claude AI integration
+- **Frontend**: React 18 hosted on Vercel (qash.solutions)
+- **Backend**: Express.js API hosted on Railway (qash-production.up.railway.app)
+- **Database**: PostgreSQL on Railway
 - **Authentication**: Firebase Auth (Google & Email/Password)
-- **Payments**: Stripe integration for subscriptions
+- **Payments**: Stripe integration for subscriptions (ready for production keys)
 - **AI Engine**: Claude 3.5 Sonnet for financial analysis
 - **File Processing**: Memory-only processing (no disk storage)
-- **Email**: Nodemailer for report forwarding
+- **Email**: Resend API with custom domain (hello@qash.solutions)
 
 ### Key Features
 1. **Multi-Document Upload** (2 files max, 20MB each)
@@ -46,8 +48,8 @@ Create `/backend/.env`:
 CLAUDE_API_KEY=your_claude_api_key
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_PUBLISHABLE_KEY=pk_test_...
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
+RESEND_API_KEY=re_...
+DATABASE_URL=postgresql://...
 PORT=5000
 NODE_ENV=development
 FRONTEND_URL=https://your-frontend.vercel.app
@@ -71,12 +73,18 @@ npm start
 
 ## API Endpoints
 
+### Public Endpoints
 - `GET /api/health` - Health check
 - `GET /api/supported-formats` - Get supported file types
+
+### Protected Endpoints (require authentication)
 - `POST /api/analyze` - Analyze documents (multipart/form-data)
 - `POST /api/analyze-metrics` - Analyze aggregated metrics
 - `POST /api/chat` - Chat with document context
 - `POST /api/send-report` - Email report forwarding
+- `GET /api/user/profile` - Get user profile
+- `PUT /api/user/profile` - Update user profile
+- `GET /api/user/documents` - Get saved documents
 
 ## Security Features
 
@@ -90,43 +98,47 @@ npm start
 
 ## Deployment
 
-### Recommended Stack
-1. **Frontend**: Vercel (automatic deploys from GitHub)
-2. **Backend**: Railway or Render
-3. **Database**: PostgreSQL (Railway/Supabase)
-4. **File Storage**: AWS S3 or Cloudinary
-5. **Email**: SendGrid or AWS SES
+### Current Production Stack
+1. **Frontend**: Vercel at qash.solutions
+2. **Backend**: Railway at qash-production.up.railway.app
+3. **Database**: PostgreSQL on Railway
+4. **Email**: Resend with qash.solutions domain
+5. **DNS**: Vercel DNS (ns1.vercel-dns.com)
 
 ### Production Checklist
-- [ ] Set all environment variables
-- [ ] Configure production CORS origins
-- [ ] Set up SSL certificates
-- [ ] Configure Stripe webhooks
-- [ ] Set up email service
-- [ ] Add database for persistent storage
+- [x] Set all environment variables
+- [x] Configure production CORS origins
+- [x] Set up SSL certificates (automatic via Vercel/Railway)
+- [ ] Configure Stripe webhooks (pending production keys)
+- [x] Set up email service (Resend)
+- [x] Add database for persistent storage (PostgreSQL)
 - [ ] Configure monitoring (Sentry, LogRocket)
 - [ ] Set up backup strategy
+- [x] Custom domain configuration
 
-## Current Status (v2.0)
+## Current Status (v3.0 - Production)
 
 ✅ **Completed Features**:
-- Firebase authentication
-- Multiple file upload
-- OCR image processing
-- Financial document analysis
-- Interactive chat
-- Document saving
-- Email forwarding
-- Password validation
-- Rate limiting
+- Firebase authentication with secure login/signup
+- Multiple file upload (2 files, 20MB each)
+- OCR image processing with Tesseract.js
+- Financial document analysis with Claude 3.5 Sonnet
+- Interactive chat with document context
+- PostgreSQL database for persistent storage
+- Document auto-saving to database
+- Email forwarding with Resend API
+- Password strength validation
+- Rate limiting and security headers
+- Custom domain (qash.solutions)
+- Professional email domain (hello@qash.solutions)
 
 🚧 **Pending Features**:
-- Real database integration (currently localStorage)
-- Stripe payment processing
+- Stripe payment processing (awaiting production keys)
 - PDF generation (currently text export)
 - User subscription management
 - Admin dashboard
 - Analytics tracking
+- File storage (S3/Cloudinary)
 
 ## Code Style Guidelines
 
