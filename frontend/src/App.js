@@ -10,15 +10,6 @@ import './App.css';
 
 function App() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  
-  // Get current user
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return unsubscribe;
-  }, []);
   
   // Debug environment variables
   console.log('ENV Debug:', {
