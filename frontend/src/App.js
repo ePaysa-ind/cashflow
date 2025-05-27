@@ -288,6 +288,7 @@ function App() {
         setProfileCompletion(completion);
       } else {
         // Fallback to old format
+        if (!user) return;
         const userDataKey = `moneylens_user_${user.uid}`;
         const userData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
         if (userData.profile) {
