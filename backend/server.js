@@ -811,6 +811,7 @@ app.post('/api/send-report', async (req, res) => {
 
     // Check if using Resend or SMTP
     const useResend = process.env.RESEND_API_KEY;
+    console.log('Email config - Using Resend:', !!useResend, 'API Key length:', useResend ? useResend.length : 0);
     
 
     // Generate PDF content (text version for now)
@@ -990,7 +991,11 @@ app.listen(PORT, () => {
     console.log('✅ Claude API key configured');
   }
   
-  if (!process.env.SMTP_USER) {
+  if (process.env.RESEND_API_KEY) {
+    console.log('✅ Resend API key configured');
+  } else if (!process.env.SMTP_USER) {
     console.warn('⚠️  Email configuration not found - email forwarding will not work');
+  } else {
+    console.log('✅ SMTP email configured');
   }
 });
