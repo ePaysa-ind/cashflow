@@ -535,7 +535,6 @@ function Landing() {
               textAlign: 'center',
               color: '#1e40af'
             }}>
-              <strong>Demo Account:</strong> demo@qash.ai / demo123
             </div>
           </div>
         </div>

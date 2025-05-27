@@ -209,7 +209,7 @@ function App() {
   const checkUserTier = () => {
     const user = auth.currentUser;
     if (user) {
-      const userDataKey = `moneylens_user_${user.uid}`;
+      const userDataKey = `qash_user_${user.uid}`;
       const userData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
       
       // Initialize trial start date if not exists
@@ -298,7 +298,7 @@ function App() {
       } else {
         // Fallback to old format
         if (!user) return;
-        const userDataKey = `moneylens_user_${user.uid}`;
+        const userDataKey = `qash_user_${user.uid}`;
         const userData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
         if (userData.profile) {
           setUserProfile({
@@ -322,7 +322,7 @@ function App() {
   const checkAndShowNudge = () => {
     const user = auth.currentUser;
     if (user) {
-      const userDataKey = `moneylens_user_${user.uid}`;
+      const userDataKey = `qash_user_${user.uid}`;
       const userData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
       
       // Check if nudge was already shown today
@@ -368,7 +368,7 @@ function App() {
   const updateProfile = (field, value) => {
     const user = auth.currentUser;
     if (user) {
-      const userDataKey = `moneylens_user_${user.uid}`;
+      const userDataKey = `qash_user_${user.uid}`;
       const userData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
       
       userData.profile = {
@@ -391,7 +391,7 @@ function App() {
     setShowNudge(false);
     const user = auth.currentUser;
     if (user) {
-      const userDataKey = `moneylens_user_${user.uid}`;
+      const userDataKey = `qash_user_${user.uid}`;
       const userData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
       userData.nudges = {
         lastShown: new Date().toISOString(),
@@ -616,7 +616,7 @@ function App() {
         // Update upload count for free tier (only for new documents)
         if (userTier === 'free' && !isReAnalysis) {
           const user = auth.currentUser;
-          const userDataKey = `moneylens_user_${user.uid}`;
+          const userDataKey = `qash_user_${user.uid}`;
           const userData = JSON.parse(localStorage.getItem(userDataKey) || '{}');
           userData.uploadsThisMonth = (userData.uploadsThisMonth || 0) + 1;
           localStorage.setItem(userDataKey, JSON.stringify(userData));
