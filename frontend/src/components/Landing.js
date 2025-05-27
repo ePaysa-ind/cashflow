@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase';
+import QashLogo from './QashLogo';
 
 function Landing() {
   const navigate = useNavigate();
@@ -176,21 +177,7 @@ function Landing() {
           alignItems: 'center',
           gap: '12px'
         }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            backgroundColor: '#3b82f6',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontSize: '20px',
-            fontWeight: 'bold',
-            boxShadow: '0 2px 4px rgba(59, 130, 246, 0.2)'
-          }}>
-            Q
-          </div>
+          <QashLogo size={40} />
           <h1 style={{ 
             fontSize: '24px', 
             fontWeight: '700', 

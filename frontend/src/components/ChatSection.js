@@ -18,7 +18,8 @@ const ChatSection = ({
   isChatLoading, 
   handleChatSubmit,
   expandedMessages,
-  setExpandedMessages 
+  setExpandedMessages,
+  disabled = false
 }) => {
   
   const toggleMessage = (index) => {
@@ -193,7 +194,8 @@ const ChatSection = ({
           type="text"
           value={chatInput}
           onChange={(e) => setChatInput(e.target.value)}
-          placeholder="Ask about cash flow, trends, or specific items..."
+          placeholder={disabled ? "Upload and analyze documents first..." : "Ask about cash flow, trends, or specific items..."}
+          disabled={disabled}
           style={{
             flex: 1,
             padding: '10px',
@@ -201,19 +203,19 @@ const ChatSection = ({
             borderRadius: '6px',
             fontSize: '14px'
           }}
-          disabled={isChatLoading}
+          disabled={isChatLoading || disabled}
         />
         <button
           type="submit"
-          disabled={!chatInput.trim() || isChatLoading}
+          disabled={!chatInput.trim() || isChatLoading || disabled}
           style={{
             padding: '10px 20px',
-            backgroundColor: !chatInput.trim() || isChatLoading ? '#e5e7eb' : '#3b82f6',
-            color: !chatInput.trim() || isChatLoading ? '#9ca3af' : 'white',
+            backgroundColor: !chatInput.trim() || isChatLoading || disabled ? '#e5e7eb' : '#3b82f6',
+            color: !chatInput.trim() || isChatLoading || disabled ? '#9ca3af' : 'white',
             border: 'none',
             borderRadius: '6px',
             fontSize: '14px',
-            cursor: !chatInput.trim() || isChatLoading ? 'not-allowed' : 'pointer'
+            cursor: !chatInput.trim() || isChatLoading || disabled ? 'not-allowed' : 'pointer'
           }}
         >
           Send
