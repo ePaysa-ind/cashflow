@@ -114,15 +114,13 @@ function App() {
       }))
     };
     
-    if (!user) return; // Don't save if no user
-    
     const sessionKey = `qash_session_${user.uid}`;
     localStorage.setItem(sessionKey, JSON.stringify(sessionData));
     
     // Show auto-save indicator
     setShowAutoSaveIndicator(true);
     setTimeout(() => setShowAutoSaveIndicator(false), 2000);
-  }, [analysis, uploadedFiles, user]);
+  }, [analysis, uploadedFiles]);
 
   const handleLogout = useCallback(async () => {
     try {
