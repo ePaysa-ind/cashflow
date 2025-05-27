@@ -132,6 +132,11 @@ npm start
 - Custom domain (qash.solutions)
 - Professional email domain (hello@qash.solutions)
 
+🔧 **Known Issues**:
+- Frontend build error: 'user is not defined' on lines that don't contain user
+- Authentication tokens not being sent to backend (causing "Anonymous" user)
+- Database not receiving user data due to missing auth headers
+
 🚧 **Pending Features**:
 - Stripe payment processing (awaiting production keys)
 - PDF generation (currently text export)
@@ -157,6 +162,11 @@ npm start
 3. **Rate Limits**: Implement on all public endpoints
 4. **Security**: Never commit API keys or secrets
 5. **CORS**: Update origins for production deployment
+6. **Authentication**: 
+   - Frontend must send Firebase ID token in Authorization header
+   - Backend extracts user from token without Firebase Admin SDK
+   - All user references in frontend should use `auth.currentUser`
+   - Database operations only occur when user is authenticated
 
 ## Troubleshooting
 
@@ -165,6 +175,11 @@ npm start
 2. **CORS Errors**: Update allowed origins
 3. **Email Not Sending**: Configure SMTP settings
 4. **File Size Error**: Check multer limits
+5. **'user is not defined' Build Error**: 
+   - Vercel may show phantom line numbers (e.g., 583, 715) that don't match actual code
+   - Ensure all `user` references use `const user = auth.currentUser`
+   - Remove `user` from dependency arrays - use `auth.currentUser` inside functions
+   - Check for stale build cache in Vercel
 
 ### Debug Mode
 Set `NODE_ENV=development` for detailed error messages
