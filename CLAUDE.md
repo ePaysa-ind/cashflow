@@ -24,9 +24,9 @@ A comprehensive cash flow analysis tool that helps businesses understand their f
 ### Frontend Architecture (v3.1 - Modular Refactoring)
 ```
 frontend/src/
-├── App.js                  # Main application (3400+ lines - to be replaced)
-├── App_new.js             # Refactored modular version (~600 lines)
-├── index_new.js           # Updated entry point with providers
+├── App.js                  # Main application (3400+ lines - working version)
+├── App_modular.js         # Refactored modular version (in progress)
+├── App_original.js        # Backup of working version
 ├── context/
 │   └── AuthContext.js     # Centralized authentication state management
 ├── services/
@@ -35,9 +35,11 @@ frontend/src/
 │   └── useUpload.js      # Reusable file upload logic
 ├── constants/
 │   └── index.js          # All app constants and configuration
+├── utils/
+│   └── icons.js          # All SVG icons from original App.js
 ├── components/
 │   ├── Header/
-│   │   ├── Header.js     # Main navigation header
+│   │   ├── Header.js     # Main navigation header (needs hamburger menu)
 │   │   └── Header.css    # Header styles
 │   ├── Profile.js        # User profile management
 │   ├── Documents.js      # Document history viewer
@@ -46,6 +48,8 @@ frontend/src/
 │   └── ProtectedRoute.js # Route protection wrapper
 └── firebase.js           # Firebase configuration
 ```
+
+**Note:** For detailed modular refactoring implementation guide, see [MODULAR_REFACTORING.md](./MODULAR_REFACTORING.md)
 
 ### Key Features
 1. **Multi-Document Upload** (2 files max, 20MB each)
